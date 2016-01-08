@@ -61,25 +61,32 @@
     (lambda (x) motto)
   )
 
+(define dalek (stupidbot-creator '(exterminate!)))
+(dalek '(I am the doctor!))
+
 ;;Q3 - matcherbot-creator
+; It's interpretted that the pattern has to be in the sent as a whole, ie, no word in between
   (define (matcherbot-creator pattern)
-    ;;insert your answer here
-    (define (iter sent pattern)
+    ;;insert your (trace iter)
+    (define (iter sent pattern full-pattern started)
           (cond ((and (empty? sent) (empty? pattern)) '())
                 ((empty? sent) #f)
                 ((empty? pattern) sent)
-                ((member? (first sent) pattern) (iter (bf sent) (bf pattern)))
-                (else (iter (bf sent) pattern))
+                ((equal? (first sent) (first pattern)) (iter (bf sent) (bf pattern) full-pattern #t))
+                ((equal? started #t) (iter sent full-pattern full-pattern #f))
+                (else (iter (bf sent) pattern full-pattern #f))
                  ))
+    ; (trace iter)
     (lambda (sent)
         (if (empty? pattern) sent
-            (iter sent pattern))
+            (iter sent pattern pattern #f))
   ))
 
 (define cedric (matcherbot-creator '(hufflepuffs are great)))
 (cedric '(hufflepuffs are great finders))
 (cedric '(what the heck is a hufflepuff))
 (cedric '(slytherins hate hufflepuffs but hufflepuffs are great finders))
+(cedric '(slytherins hate hufflepuffs but hufflepuffs are the great finders))
 
 ;;Q4 - substitutebot-creator
   (define (substitutebot-creator from to)
@@ -117,32 +124,74 @@
 ;;Q6 - inquisitivebot
   (define (inquisitivebot sent)
     ;;insert your answer here
-    (error "not yet implemented")
+    (if (empty? sent) sent
+        (se (switcherbot sent) '?))
   )
-  
+
+(inquisitivebot '(I am happy))
+(inquisitivebot '(I can see you))
+
 ;;Q7 - eliza
   (define (eliza sent)
     ;;insert your answer here
-    (error "not yet implemented")
+    (define cedric? (matcherbot-creator '(I am)))
+    (cond ((empty? sent) '(how can I help you ?))
+          ((equal? (first sent) 'hello) '(hello there!))
+          ((not (equal? #f (cedric? sent))) (se '(why are you) (switcherbot (cedric? sent)) '?))
+          ((equal? (last sent) '?) '(I can not answer your question.))
+          (else
+           (switcherbot sent)))
   )
+
+(eliza '(hello))
+(eliza '(I am excited to finish unit 1))
+(eliza '(you are happy to see me))
+(eliza '(how are you ?))
 
 ;;Q8 - reactorbot-creator
   (define (reactorbot-creator bot pat out)
     ;;insert your answer here
-    (error "not yet implemented")
+    (lambda (sent) (if (equal? pat sent) out
+                       (bot sent)))
   )
+
+(define stupidbot (stupidbot-creator '(I am Groot)))
+(define groot (reactorbot-creator stupidbot '(no Groot youll die why are you doing this) '(WE are Groot)))
+(groot '(whats up groot))
+(groot '(no Groot youll die why are you doing this))
 
 ;;Q9 - replacerbot-creator
   (define (replacerbot-creator bot pat before after)
     ;;insert your answer here
-    (error "not yet implemented")
+    (define cedric? (matcherbot-creator pat))
+    (lambda (sent) (
+                    cond ((not (equal? #f (cedric? sent))) (se before (cedric? sent) after))
+                          (else (bot sent))))
   )
+
+(define stupidbot2 (stupidbot-creator '(I am Groot)))
+(define groot2 (replacerbot-creator stupidbot2 '(no Groot youll die why are you doing this) 'before
+                                   'after ))
+(groot2 '(whats up groot))
+(groot2 '(no Groot youll die why are you doing this ahh))
 
 ;;Q10 - exagerate
   (define (exaggerate bot n)
     ;;insert your answer here
-    (error "not yet implemented")
+    (define (iter sent n)
+      (cond ((= n 0) sent)
+          (else (iter (replace sent) (- n 1)))))
+    (define (replace sent)
+      (cond ((empty? sent) '())
+            ((adjective? (first sent)) (se 'very (first sent) (replace (bf sent))))
+            (else (se (first sent) (replace (bf sent))))))
+    (lambda (sent) (iter (bot sent) n))
   )
+
+(define exaggerated-babybot1 (exaggerate babybot 1))
+(exaggerated-babybot1 '(this soup is hot and tasty))
+(define exaggerated-babybot2 (exaggerate babybot 2))
+(exaggerated-babybot2 '(this soup is hot and tasty))
 
 ;;REMEMBER TO ADD YOUR OWN TESTS TO GRADER.RKT!
 ;;END OF PROJECT 1
