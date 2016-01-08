@@ -51,33 +51,68 @@
 ;;Q1 - babybot
   (define (babybot sent)
     ;;insert your answer here
-    (error "not yet implemented")
+    (if (equal? sent 'bye) 'Okay
+        sent)
   )
 
 ;;Q2 - stupidbot-creator
   (define (stupidbot-creator motto)
     ;;insert your answer here
-    (error "not yet implemented")
+    (lambda (x) motto)
   )
 
 ;;Q3 - matcherbot-creator
   (define (matcherbot-creator pattern)
     ;;insert your answer here
-    (error "not yet implemented")
-  )
+    (define (iter sent pattern)
+          (cond ((and (empty? sent) (empty? pattern)) '())
+                ((empty? sent) #f)
+                ((empty? pattern) sent)
+                ((member? (first sent) pattern) (iter (bf sent) (bf pattern)))
+                (else (iter (bf sent) pattern))
+                 ))
+    (lambda (sent)
+        (if (empty? pattern) sent
+            (iter sent pattern))
+  ))
+
+(define cedric (matcherbot-creator '(hufflepuffs are great)))
+(cedric '(hufflepuffs are great finders))
+(cedric '(what the heck is a hufflepuff))
+(cedric '(slytherins hate hufflepuffs but hufflepuffs are great finders))
 
 ;;Q4 - substitutebot-creator
   (define (substitutebot-creator from to)
     ;;insert your answer here
-    (error "not yet implemented")
+    (define (replace wd from to)
+      (if (equal? wd (first from)) (first to)
+          (replace wd (bf from) (bf to))))
+    (define (iter sent)
+      (cond ((empty? sent) '())
+            ((member? (first sent) from) (se (replace (first sent) from to) (iter (bf sent))))
+            (else (se (first sent) (iter (bf sent))))))
+    (lambda (sent) (if (or (empty? from) (empty? to)) sent
+                       (iter sent)))
   )
+
+(define marions-vacay
+          (substitutebot-creator '(indonesia winter noodles)
+                                 '(texas summer steak)))
+
+(marions-vacay '(I visited indonesia this winter and ate noodles))
 
 ;;Q5 - switcherbot
   (define (switcherbot sent)
     ;;insert your answer here
-    (error "not yet implemented")
+    (define me '(me I am was my yours))
+    (define you '(you you are were your mine))
+    (define switch (substitutebot-creator (se me you)
+                                       (se you me)))
+    (if (member (first sent) '(you You)) (se 'I (switch (bf sent)))
+        (switch sent))
   )
 
+(switcherbot '(you are reia but I am a bird))
 
 ;;Q6 - inquisitivebot
   (define (inquisitivebot sent)
