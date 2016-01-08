@@ -17,6 +17,10 @@
         '(I am babybot)
         "test 1")
       ;; Add more tests here
+      (check-equal?
+        (babybot '())
+        '()
+        "test 2")
     )
 
     (test-case
@@ -26,6 +30,10 @@
         '(I am Groot)
         "test 1")
       ;; Add more tests here
+      (check-equal?
+        ((stupidbot-creator '(I am Groot)) '())
+        '(I am Groot)
+        "test 2")
     )
 
     (test-case
@@ -38,7 +46,17 @@
         ((matcherbot-creator '(my name is)) '(the names starlord))
         #f
         "test 2")
+      
       ;; Add more tests here
+      (check-equal?
+        ((matcherbot-creator '(hufflepuffs are great)) '(slytherins hate hufflepuffs but hufflepuffs are great finders))
+        '(finders)
+        "test 3")
+      (check-equal?
+        ((matcherbot-creator '(my name is)) '(my first name is))
+        #f
+        "test 4")
+      
     )
 
     (test-case
