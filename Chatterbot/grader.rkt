@@ -144,6 +144,10 @@
         '(this soup is very hot and very tasty)
         "test 1")
       ;; Add more tests here
+      (check-equal?
+        ((exaggerate babybot 2) '(this soup is hot and tasty))
+        '(this soup is very very very hot and very very very tasty)
+        "test 2")
     )
 ))
 
