@@ -37,6 +37,8 @@
   (display "start: ") (print-sentence start)
   (helper bot1 bot2 start 0))
 
+;(chatter stupidbot2 stupidbot 'start 5)
+
 ;;; Checks if a given word is an adjective or not
 ;;; Requires adjectives.scm to be loaded beforehand
 (define adjective?
